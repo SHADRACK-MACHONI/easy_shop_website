@@ -58,7 +58,7 @@ def initiate_mpesa_payment(request, order_id):
 @login_required
 def home(request):
     products = Product.objects.all()
-    return render(request, 'shop/home.html', {'products': products})
+    return render(request, 'home.html', {'products': products})
 @login_required
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -76,7 +76,7 @@ def product_detail(request, pk):
 @staff_member_required
 def admin_dashboard(request):
     orders = Order.objects.exclude(pk__isnull=True)
-    return render(request, 'shop/admin_dashboard.html', {'orders': orders})
+    return render(request, 'admin_dashboard.html', {'orders': orders})
 
 def add_product(request):
     if request.method == 'POST':
