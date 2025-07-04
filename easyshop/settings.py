@@ -134,8 +134,8 @@ MPESA_SHORTCODE = "174379"  # Sandbox default
 MPESA_PASSKEY = "YOUR_PASSKEY"
 MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"  # For local, use https://requestbin.com to test
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = 'accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

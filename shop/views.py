@@ -9,6 +9,7 @@ import json
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -54,11 +55,11 @@ def initiate_mpesa_payment(request, order_id):
         order.save()
 
     return JsonResponse(response)
-
+@login_required
 def home(request):
-    products = Product.objects.filter(available=True)
-    return render(request, 'home.html', {'products': products})
-
+    products = Product.objects.all()
+    return render(request, 'shop/home.html', {'products': products})
+@login_required
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -72,9 +73,10 @@ def product_detail(request, pk):
     else:
         form = OrderForm()
     return render(request, 'product_detail.html', {'product': product, 'form': form})
+@staff_member_required
 def admin_dashboard(request):
     orders = Order.objects.exclude(pk__isnull=True)
-    return render(request, 'admin_dashboard.html', {'orders': orders})
+    return render(request, 'shop/admin_dashboard.html', {'orders': orders})
 
 def add_product(request):
     if request.method == 'POST':

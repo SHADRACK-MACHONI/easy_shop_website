@@ -37,10 +37,17 @@
 </nav>
 <nav>
   {% if user.is_authenticated %}
-  <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
-{% else %}
-  <a href="{% url 'login' %}">Login</a>
-  <a href="{% url 'register' %}">Register</a>
+    Welcome, {{ user.username }}!
+    <a href="{% url 'logout' %}">Logout</a>
+
+    {% if user.is_staff %}
+      <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+      <a href="/admin/">Django Admin</a>
+    {% endif %}
+  {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'register' %}">Register</a>
+    <a href="{% url 'logout' %}">Logout</a>
 {% endif %}
 </nav>
 <div class="container mt-4">
