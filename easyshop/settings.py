@@ -136,6 +136,6 @@ MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"  # For local, use 
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
