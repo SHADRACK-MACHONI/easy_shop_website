@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-center">Welcome to Easy Shop</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow">
+            <img src="{{ product.image.url }}" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                <p class="card-text">Ksh {{ product.price }}</p>
+                <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary">Buy Now</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

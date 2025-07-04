@@ -1,0 +1,19 @@
+body {
+    background-color: #f8f9fa;
+}
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+h1, h2 {
+    color: #0d6efd;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
