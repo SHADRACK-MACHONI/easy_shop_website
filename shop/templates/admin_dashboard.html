@@ -40,12 +40,14 @@
           {% if not order.payment_confirmed %}
             <a href="{% url 'initiate_mpesa_payment' order.pk %}" class="btn btn-primary btn-sm">Request Payment</a>
           {% endif %}
-         {% if order.status == 'Pending' %}
+
+          {% if order.status == 'Pending' %}
             <a href="{% url 'update_order_status' order.pk 'Out for Delivery' %}" class="btn btn-warning btn-sm">Out for Delivery</a>
-            {% elif order.status == 'Out for Delivery' %}
+          {% elif order.status == 'Out for Delivery' %}
             <span class="badge bg-info">Out for Delivery</span>
-            {% elif order.status == 'Delivered' %}
+          {% elif order.status == 'Delivered' %}
             <span class="badge bg-success">Delivered</span>
+          {% endif %}
         {% endif %}
       </td>
     </tr>
