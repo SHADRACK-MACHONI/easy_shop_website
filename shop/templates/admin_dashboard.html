@@ -24,7 +24,7 @@
       <td>{{ order.product.name }}</td>
       <td>{{ order.customer_name }}</td>
       <td>{{ order.customer_phone }}</td>
-      <td>{{ order.customer_address }}</td>
+      <td>{{ order.house }}, {{ order.room }}</td>
       <td>
         <span class="badge bg-info">{{ order.status }}</span>
       </td>
@@ -36,17 +36,16 @@
         {% endif %}
       </td>
       <td>
-        {% if order.pk %}
-          {% if not order.payment_confirmed %}
-            <a href="{% url 'initiate_mpesa_payment' order.pk %}" class="btn btn-primary btn-sm">Request Payment</a>
-          {% endif %}
+        {% if not order.payment_confirmed %}
+          <a href="{% url 'initiate_mpesa_payment' order.pk %}" class="btn btn-primary btn-sm">Request Payment</a>
+        {% endif %}
 
-         {% if order.status == 'Pending' %}
-            <a href="{% url 'update_order_status' order.pk 'Out for Delivery' %}" class="btn btn-warning btn-sm">Out for Delivery</a>
-            {% elif order.status == 'Out for Delivery' %}
-            <span class="badge bg-info">Out for Delivery</span>
-            {% elif order.status == 'Delivered' %}
-            <span class="badge bg-success">Delivered</span>
+        {% if order.status == 'Pending' %}
+          <a href="{% url 'update_order_status' order.pk 'Out for Delivery' %}" class="btn btn-warning btn-sm">Out for Delivery</a>
+        {% elif order.status == 'Out for Delivery' %}
+          <span class="badge bg-info">Out for Delivery</span>
+        {% elif order.status == 'Delivered' %}
+          <span class="badge bg-success">Delivered</span>
         {% endif %}
       </td>
     </tr>
