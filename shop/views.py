@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import redirect, get_object_or_404
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -97,3 +98,18 @@ def update_order_status(request, pk, status):
         order.payment_confirmed = True
     order.save()
     return redirect('admin_dashboard')
+
+@staff_member_required
+def mark_out_for_delivery(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'Out for Delivery'
+    order.save()
+    return redirect('admin_dashboard')
+@login_required
+def mark_delivered(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer_phone=request.user.username)  # Or however you link user
+    if request.method == 'POST' and order.status == 'Out for Delivery':
+        order.status = 'Delivered'
+        order.save()
+    return redirect('my_orders')
+
