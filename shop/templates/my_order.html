@@ -1,8 +1,36 @@
-{% if order.status == 'Out for Delivery' %}
-  <form method="post" action="{% url 'mark_delivered' order.id %}" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
-  </form>
-{% elif order.status == 'Delivered' %}
-  <span class="badge bg-success">Delivered</span>
-{% endif %}
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-center my-4">My Orders</h2>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Address</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.product.name }}</td>
+      <td>{{ order.house }}, {{ order.room }}</td>
+      <td>{{ order.status }}</td>
+      <td>
+        {% if order.status == 'Out for Delivery' %}
+          <form method="post" action="{% url 'mark_delivered' order.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
+          </form>
+        {% elif order.status == 'Delivered' %}
+          <span class="badge bg-success">Delivered</span>
+        {% else %}
+          <span class="badge bg-warning">Pending</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

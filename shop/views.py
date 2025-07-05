@@ -106,10 +106,15 @@ def mark_out_for_delivery(request, order_id):
     order.save()
     return redirect('admin_dashboard')
 @login_required
-def mark_delivered(request, order_id):
-    order = get_object_or_404(Order, id=order_id, customer_phone=request.user.username)  # Or however you link user
-    if request.method == 'POST' and order.status == 'Out for Delivery':
+def mark_delivered(request, pk):
+    order = get_object_or_404(Order, pk=pk, customer_phone=request.user.username)
+    if request.method == 'POST':
         order.status = 'Delivered'
         order.save()
     return redirect('my_orders')
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(customer_name=request.user.username)
+    return render(request, 'my_order.html', {'orders': orders})
 
