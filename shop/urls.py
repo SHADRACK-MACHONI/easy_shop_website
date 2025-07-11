@@ -16,9 +16,6 @@ urlpatterns = [
     path('admin/mark-out-for-delivery/<int:order_id>/', views.mark_out_for_delivery, name='mark_out_for_delivery'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
-    path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
-    path('pay/<int:pk>/', views.initiate_payment, name='initiate_payment'),
-    path('mpesa-callback/', views.mpesa_callback, name='mpesa_callback'),
-    path('client/mark-delivered/<int:order_id>/', views.client_mark_delivered, name='client_mark_delivered'),
+
 ]
 

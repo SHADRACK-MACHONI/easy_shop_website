@@ -131,7 +131,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MPESA_CONSUMER_KEY = "mciyeGVWIqGBlUOMCfdcjlj1J3s8u0RgrskAf4uKukpCQACZ"
 MPESA_CONSUMER_SECRET = "KOQBGKf727x0kxMpgkLEQPbMH0EtD976PAljlQQEWS3Sgx3zxJWWKbO2GHbpN0AC"
 MPESA_SHORTCODE = "174379"  # Sandbox default
-MPESA_PASSKEY = "N/A"
+MPESA_PASSKEY = ""
 MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"  # For local, use https://requestbin.com to test
 
 LOGIN_URL = '/accounts/login/'

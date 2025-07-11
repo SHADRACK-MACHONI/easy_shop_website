@@ -31,7 +31,6 @@ class Order(models.Model):
     
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    delivered = models.BooleanField(default = False)
     admin_seen = models.BooleanField(default=False),
     payment_confirmed = models.BooleanField(default=False)
     mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
