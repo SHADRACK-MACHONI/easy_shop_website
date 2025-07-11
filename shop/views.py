@@ -160,7 +160,7 @@ def mark_delivered(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
     order.delivered = True
     order.save()
-    return redirect('order_id')
+    return redirect('my_orders')
 
 @login_required
 def my_orders(request):
