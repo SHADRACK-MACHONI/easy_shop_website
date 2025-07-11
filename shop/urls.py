@@ -14,7 +14,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('accounts/register/', views.register, name='register'),
     path('admin/mark-out-for-delivery/<int:order_id>/', views.mark_out_for_delivery, name='mark_out_for_delivery'),
-    path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('mark-delivered/<int:pk>/', views.mark_delivered, name='mark_delivered'),
 ]
