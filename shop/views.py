@@ -156,12 +156,11 @@ def mark_out_for_delivery(request, order_id):
     order.save()
     return redirect('admin_dashboard')
 @login_required
-def mark_delivered(request, pk):
-    order = get_object_or_404(Order, pk=pk, customer_phone=request.user.username)
-    if request.method == 'POST':
-        order.status = 'Delivered'
-        order.save()
-    return redirect('my_orders')
+def mark_delivered(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    order.delivered = True
+    order.save()
+    return redirect('admin_dashboard')
 
 @login_required
 def my_orders(request):
