@@ -28,6 +28,14 @@
         {% else %}
           <span class="badge bg-warning">Pending</span>
         {% endif %}
+        {% if not order.delivered %}
+        <form method="POST" action="{% url 'client_mark_delivered' order.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success">Mark as Delivered</button>
+     </form>
+    {% else %}
+       <span class="badge bg-success">Delivered</span>
+      {% endif %}
       </td>
     </tr>
     {% endfor %}

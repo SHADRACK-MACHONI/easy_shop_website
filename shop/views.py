@@ -160,10 +160,18 @@ def mark_delivered(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
     order.delivered = True
     order.save()
-    return redirect('my_orders')
+    return redirect('admin-dashboard')
 
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(customer_name=request.user.username)
     return render(request, 'my_order.html', {'orders': orders})
+@login_required
+def client_mark_delivered(request, order_id):
+    order = get_object_or_404(Order, pk=order_id, user=request.user)
+
+    if request.method == 'POST':
+        order.delivered = True
+        order.save()
+        return redirect('client_orders')
 
