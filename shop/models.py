@@ -17,6 +17,7 @@ class Order(models.Model):
         ('Pending', 'Pending'),                # Order placed, waiting to be prepared
         ('Out for Delivery', 'Out for Delivery'),  # Dispatched from store
         ('Delivered', 'Delivered'),           # Customer confirmed delivery
+        de
     ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
