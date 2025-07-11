@@ -128,10 +128,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-MPESA_CONSUMER_KEY = "YOUR_SANDBOX_CONSUMER_KEY"
-MPESA_CONSUMER_SECRET = "YOUR_SANDBOX_CONSUMER_SECRET"
+MPESA_CONSUMER_KEY = "mciyeGVWIqGBlUOMCfdcjlj1J3s8u0RgrskAf4uKukpCQACZ"
+MPESA_CONSUMER_SECRET = "KOQBGKf727x0kxMpgkLEQPbMH0EtD976PAljlQQEWS3Sgx3zxJWWKbO2GHbpN0AC"
 MPESA_SHORTCODE = "174379"  # Sandbox default
-MPESA_PASSKEY = "YOUR_PASSKEY"
+MPESA_PASSKEY = "N/A"
 MPESA_CALLBACK_URL = "https://yourdomain.com/mpesa/callback/"  # For local, use https://requestbin.com to test
 
 LOGIN_URL = '/accounts/login/'
