@@ -11,6 +11,61 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import redirect, get_object_or_404
+import requests
+import datetime
+import base64
+
+def get_mpesa_access_token():
+    consumer_key = 'mciyeGVWIqGBlUOMCfdcjlj1J3s8u0RgrskAf4uKukpCQACZ'
+    consumer_secret = 'KOQBGKf727x0kxMpgkLEQPbMH0EtD976PAljlQQEWS3Sgx3zxJWWKbO2GHbpN0AC'
+    api_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+
+    response = requests.get(api_URL, auth=(consumer_key, consumer_secret))
+    json_response = response.json()
+    return json_response['access_token']
+
+def lipa_na_mpesa_online(phone, amount, order_id):
+    access_token = get_mpesa_access_token()
+    shortcode = '174379'
+    passkey = 'N/A'
+
+    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    data_to_encode = shortcode + passkey + timestamp
+    password = base64.b64encode(data_to_encode.encode()).decode('utf-8')
+
+    stk_push_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+    headers = {'Authorization': 'Bearer ' + access_token}
+    payload = {
+        "BusinessShortCode": shortcode,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": amount,
+        "PartyA": phone,
+        "PartyB": shortcode,
+        "PhoneNumber": phone,
+        "CallBackURL": "https://yourdomain.com/store/mpesa-callback/",
+        "AccountReference": str(order_id),
+        "TransactionDesc": "Payment for EasyShop Order"
+    }
+
+    response = requests.post(stk_push_url, json=payload, headers=headers)
+    return response.json()
+
+@login_required
+def initiate_payment(request, pk):
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        amount = order.product.price
+
+        order.phone_number = phone
+        order.save()
+
+        response = lipa_na_mpesa_online(phone, int(amount), order.id)
+        return render(request, 'store/payment_processing.html', {'response': response, 'order': order})
+    return render(request, 'store/payment_form.html', {'order': order})
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

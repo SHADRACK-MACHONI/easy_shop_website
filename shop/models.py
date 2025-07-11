@@ -27,10 +27,14 @@ class Order(models.Model):
     payment_confirmed = models.BooleanField(default=False)
     mpesa_transaction_id = models.CharField(max_length=50, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
+    
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
     admin_seen = models.BooleanField(default=False),
+    payment_confirmed = models.BooleanField(default=False)
+    mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     def _str_(self):
         return f"Order for {self.product.name} by {self.customer_name}"
