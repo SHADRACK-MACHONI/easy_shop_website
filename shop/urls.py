@@ -17,5 +17,7 @@ urlpatterns = [
     path('my-orders/', views.my_orders, name='my_orders'),
     path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
     path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
+    path('pay/<int:pk>/', views.initiate_payment, name='initiate_payment'),
+    path('mpesa-callback/', views.mpesa_callback, name='mpesa_callback'),
 ]
 

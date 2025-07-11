@@ -78,27 +78,22 @@ def register(request):
 
 @csrf_exempt
 def mpesa_callback(request):
-    data = json.loads(request.body.decode('utf-8'))
+    from django.http import JsonResponse
+    import json
 
-    try:
-        checkout_id = data["Body"]["stkCallback"]["CheckoutRequestID"]
-        result_code = data["Body"]["stkCallback"]["ResultCode"]
+    mpesa_body = json.loads(request.body.decode('utf-8'))
+    result_code = mpesa_body['Body']['stkCallback']['ResultCode']
+    metadata = mpesa_body['Body']['stkCallback']['CallbackMetadata']
+    order_id = int(metadata['Item'][0]['Value'])  # This is our AccountReference
 
-        if result_code == 0:
-            mpesa_receipt_number = next(
-                (item["Value"] for item in data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
-                 if item["Name"] == "MpesaReceiptNumber"), None
-            )
+    order = Order.objects.get(pk=order_id)
+    if result_code == 0:
+        receipt = metadata['Item'][1]['Value']
+        order.payment_confirmed = True
+        order.mpesa_receipt = receipt
+        order.save()
 
-            # Find the order by checkout_request_id
-            order = Order.objects.get(checkout_request_id=checkout_id)
-            order.payment_confirmed = True
-            order.mpesa_transaction_id = mpesa_receipt_number
-            order.save()
-    except Exception as e:
-        print("M-Pesa callback error:", e)
-
-    return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
+    return JsonResponse({"Result": "Success"})
 
 def initiate_mpesa_payment(request, order_id):
     order = Order.objects.get(pk=order_id)
