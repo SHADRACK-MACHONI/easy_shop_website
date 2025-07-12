@@ -28,8 +28,6 @@ class Order(models.Model):
     payment_confirmed = models.BooleanField(default=False)
     mpesa_transaction_id = models.CharField(max_length=50, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
-    out_for_delivery = models.BooleanField(default=False)
-    delivered = models.BooleanField(default=False)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     admin_seen = models.BooleanField(default=False),
