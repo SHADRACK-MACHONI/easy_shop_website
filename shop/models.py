@@ -20,7 +20,7 @@ class Order(models.Model):
     
     ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+  
     customer_name = models.CharField(max_length=100)
     customer_phone = models.CharField(max_length=20)
     house = models.CharField(max_length=100)

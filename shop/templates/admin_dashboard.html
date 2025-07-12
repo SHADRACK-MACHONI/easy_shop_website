@@ -10,7 +10,8 @@
   <thead class="table-dark">
     <tr>
       <th>Product</th>
-      <th>Customer</th>
+      <th>Customer Name</th>
+      <th>Phone</th>
       <th>Address</th>
       <th>Status</th>
       <th>Payment</th>
@@ -20,7 +21,8 @@
     {% for order in orders %}
     <tr>
       <td>{{ order.product.name }}</td>
-      <td>{{ order.user.username }}</td>
+      <td>{{ order.customer_name }}</td>
+      <td>{{ order.phone }}</td>
       <td>{{ order.house }}, {{ order.room }}</td>
       <td>
         {% if order.delivered %}
@@ -40,7 +42,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="5">
+      <td colspan="6">
         <strong>Payment Confirmed:</strong> {{ order.payment_confirmed }} <br>
         <strong>Receipt:</strong> {{ order.mpesa_receipt }}
       </td>
