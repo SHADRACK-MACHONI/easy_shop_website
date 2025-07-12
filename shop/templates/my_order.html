@@ -18,11 +18,11 @@
       <td>{{ order.house }}, {{ order.room }}</td>
       <td>
         {% if order.delivered %}
-          <span class="badge bg-success">Delivered</span>
+          Delivered
         {% elif order.out_for_delivery %}
-          <span class="badge bg-info">Out for Delivery</span>
+          Out for Delivery
         {% else %}
-          <span class="badge bg-warning">Pending</span>
+          Pending
         {% endif %}
       </td>
       <td>

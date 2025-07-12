@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -7,27 +9,33 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/')
     available = models.BooleanField(default=True)
 
-    def _str_(self):
+    def str(self):
         return self.name
 
-
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),                # Order placed, waiting to be prepared
+        ('Out for Delivery', 'Out for Delivery'),  # Dispatched from store
+        ('Delivered', 'Delivered'),           # Customer confirmed delivery
+    
+    ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
+  
     customer_name = models.CharField(max_length=100)
     customer_phone = models.CharField(max_length=20)
     house = models.CharField(max_length=100)
     room = models.CharField(max_length=100)
-
-    paid = models.BooleanField(default=False)
     payment_confirmed = models.BooleanField(default=False)
     mpesa_transaction_id = models.CharField(max_length=50, blank=True, null=True)
-    mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-
     out_for_delivery = models.BooleanField(default=False)
     delivered = models.BooleanField(default=False)
 
-    def _str_(self):
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    admin_seen = models.BooleanField(default=False),
+    payment_confirmed = models.BooleanField(default=False)
+    mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+
+    def str(self):
         return f"Order for {self.product.name} by {self.customer_name}"

@@ -1,21 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.forms import UserCreationForm
-from django.http import JsonResponse
 from .models import Product, Order
 from .forms import ProductForm, OrderForm
+from django.http import JsonResponse
+from .mpesa import lipa_na_mpesa_online
+from .models import Order
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import redirect, get_object_or_404
 import requests
 import datetime
 import base64
-import json
 
-# M-Pesa Auth
 def get_mpesa_access_token():
-    consumer_key = 'YOUR_CONSUMER_KEY'
-    consumer_secret = 'YOUR_CONSUMER_SECRET'
+    consumer_key = 'mciyeGVWIqGBlUOMCfdcjlj1J3s8u0RgrskAf4uKukpCQACZ'
+    consumer_secret = 'KOQBGKf727x0kxMpgkLEQPbMH0EtD976PAljlQQEWS3Sgx3zxJWWKbO2GHbpN0AC'
     api_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+
     response = requests.get(api_URL, auth=(consumer_key, consumer_secret))
     json_response = response.json()
     return json_response['access_token']
@@ -23,7 +27,7 @@ def get_mpesa_access_token():
 def lipa_na_mpesa_online(phone, amount, order_id):
     access_token = get_mpesa_access_token()
     shortcode = '174379'
-    passkey = 'YOUR_PASSKEY'
+    passkey = ''
 
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     data_to_encode = shortcode + passkey + timestamp
@@ -48,65 +52,41 @@ def lipa_na_mpesa_online(phone, amount, order_id):
     response = requests.post(stk_push_url, json=payload, headers=headers)
     return response.json()
 
-# Pages
 @login_required
-def home(request):
-    products = Product.objects.all()
-    return render(request, 'home.html', {'products': products})
-
-@login_required
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def initiate_payment(request, pk):
+    order = get_object_or_404(Order, pk=pk, user=request.user)
     if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.product = product
-            order.customer_name = request.user.username
-            order.save()
-            return redirect('my_orders')
-    else:
-        form = OrderForm()
-    return render(request, 'product_detail.html', {'product': product, 'form': form})
+        phone = request.POST.get('phone')
+        amount = order.product.price
 
-@login_required
-def my_orders(request):
-    orders = Order.objects.filter(customer_name=request.user.username)
-    return render(request, 'my_order.html', {'orders': orders})
-
-@staff_member_required
-def admin_dashboard(request):
-    orders = Order.objects.all()
-    return render(request, 'admin_dashboard.html', {'orders': orders})
-
-# Order status views
-@staff_member_required
-def update_order_status(request, pk, status):
-    order = get_object_or_404(Order, pk=pk)
-    if status == 'Out for Delivery':
-        order.out_for_delivery = True
-    elif status == 'Delivered':
-        order.delivered = True
-    order.save()
-    return redirect('admin_dashboard')
-
-@login_required
-def mark_delivered(request, order_id):
-    order = get_object_or_404(Order, pk=order_id)
-    if request.method == 'POST':
-        order.delivered = True
+        order.phone_number = phone
         order.save()
-    return redirect('my_orders')
 
-# M-Pesa Payment
+        response = lipa_na_mpesa_online(phone, int(amount), order.id)
+        return render(request, 'store/payment_processing.html', {'response': response, 'order': order})
+    return render(request, 'store/payment_form.html', {'order': order})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
 @csrf_exempt
 def mpesa_callback(request):
+    from django.http import JsonResponse
+    import json
+
     mpesa_body = json.loads(request.body.decode('utf-8'))
     result_code = mpesa_body['Body']['stkCallback']['ResultCode']
     metadata = mpesa_body['Body']['stkCallback']['CallbackMetadata']
-    order_id = int(metadata['Item'][0]['Value'])
-    order = Order.objects.get(pk=order_id)
+    order_id = int(metadata['Item'][0]['Value'])  # This is our AccountReference
 
+    order = Order.objects.get(pk=order_id)
     if result_code == 0:
         receipt = metadata['Item'][1]['Value']
         order.payment_confirmed = True
@@ -115,20 +95,40 @@ def mpesa_callback(request):
 
     return JsonResponse({"Result": "Success"})
 
-@login_required
 def initiate_mpesa_payment(request, order_id):
-    order = get_object_or_404(Order, pk=order_id)
+    order = Order.objects.get(pk=order_id)
     response = lipa_na_mpesa_online(order.customer_phone, int(order.product.price), order_id)
-
+    
+    # Save CheckoutRequestID
     checkout_request_id = response.get("CheckoutRequestID")
     if checkout_request_id:
         order.checkout_request_id = checkout_request_id
         order.save()
 
     return JsonResponse(response)
-
-# Admin Product
+@login_required
+def home(request):
+    products = Product.objects.all()
+    return render(request, 'home.html', {'products': products})
+@login_required
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.product = product
+            order.payment_confirmed = True  # Simulated payment confirmation
+            order.save()
+            return redirect('home')
+    else:
+        form = OrderForm()
+    return render(request, 'product_detail.html', {'product': product, 'form': form})
 @staff_member_required
+def admin_dashboard(request):
+    orders = Order.objects.exclude(pk__isnull=True)
+    return render(request, 'admin_dashboard.html', {'orders': orders})
+
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -139,15 +139,33 @@ def add_product(request):
         form = ProductForm()
     return render(request, 'add_product.html', {'form': form})
 
-# User Registration
-def register(request):
+def update_order_status(request, pk, status):
+    order = get_object_or_404(Order, pk=pk)
+    order.status = status
+    if status == 'Out for Delivery':
+        order.admin_seen = True
+    if status == 'Delivered':
+        order.payment_confirmed = True
+    order.save()
+    return redirect('admin_dashboard')
+
+@staff_member_required
+def mark_out_for_delivery(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'Out for Delivery'
+    order.save()
+    return redirect('admin_dashboard')
+@login_required
+def mark_delivered(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+     order.delivered = True
+     order.save()
+    return redirect('my_orders')
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(customer_name=request.user.username)
+    return render(request, 'my_order.html', {'orders': orders})
 
 
