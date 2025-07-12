@@ -18,6 +18,14 @@
       <td>{{ order.house }}, {{ order.room }}</td>
       <td>{{ order.status }}</td>
       <td>
+        {% if not order.delivered %}
+           <form method="post" action="{% url 'client_mark_delivered' order.id %}">
+           {% csrf_token %}
+             <button type="submit">Mark as Delivered</button>
+              </form>
+             {% else %}
+              ✅ Delivered
+                 {% endif %}
         {% if order.status == 'Out for Delivery' %}
           <form method="post" action="{% url 'mark_delivered' order.id %}" style="display:inline;">
             {% csrf_token %}
