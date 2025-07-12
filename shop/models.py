@@ -20,7 +20,7 @@ class Order(models.Model):
     
     ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     customer_name = models.CharField(max_length=100)
     customer_phone = models.CharField(max_length=20)
     house = models.CharField(max_length=100)
@@ -28,7 +28,8 @@ class Order(models.Model):
     payment_confirmed = models.BooleanField(default=False)
     mpesa_transaction_id = models.CharField(max_length=50, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
-    
+    out_for_delivery = models.BooleanField(default=False)
+    delivered = models.BooleanField(default=False)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     admin_seen = models.BooleanField(default=False),

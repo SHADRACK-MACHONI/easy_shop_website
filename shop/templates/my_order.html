@@ -16,14 +16,22 @@
     <tr>
       <td>{{ order.product.name }}</td>
       <td>{{ order.house }}, {{ order.room }}</td>
-      <td>{{ order.status }}</td>
       <td>
-        {% if order.status == 'Out for Delivery' %}
+        {% if order.delivered %}
+          Delivered
+        {% elif order.out_for_delivery %}
+          Out for Delivery
+        {% else %}
+          Pending
+        {% endif %}
+      </td>
+      <td>
+        {% if order.out_for_delivery and not order.delivered %}
           <form method="post" action="{% url 'mark_delivered' order.id %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
           </form>
-        {% elif order.status == 'Delivered' %}
+        {% elif order.delivered %}
           <span class="badge bg-success">Delivered</span>
         {% else %}
           <span class="badge bg-warning">Pending</span>
