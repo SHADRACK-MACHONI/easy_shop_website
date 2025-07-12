@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from django.urls import admin
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -13,7 +14,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('accounts/register/', views.register, name='register'),
-    path('admin/mark-out-for-delivery/<int:order_id>/', views.mark_out_for_delivery, name='mark_out_for_delivery'),
+    path('admin/',admin.site.urls),
+    path('dashboard/mark-out-for-delivery/<int:order_id>/', views.mark_out_for_delivery, name='mark_out_for_delivery'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('mark-delivered/<int:order_id>/', views.mark_delivered, name='mark_delivered'),
    
