@@ -26,12 +26,12 @@
         {% endif %}
       </td>
       <td>
-        {% if order.out_for_delivery and not order.delivered %}
+        {% if order.status =='Out for Delivery' %}
           <form method="post" action="{% url 'mark_delivered' order.id %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
           </form>
-        {% elif order.delivered %}
+        {% elif order.status == 'Delivered' %}
           <span class="badge bg-success">Delivered</span>
         {% else %}
           <span class="badge bg-warning">Pending</span>
