@@ -43,7 +43,7 @@
       </td>
       <td>
         {% if order.status == 'Pending' %}
-          <a href="{% url 'mark_out_for_delivery' %}" class="btn btn-warning btn-sm">Mark Out for Delivery</a>
+          <a href="{% url 'mark_out_for_delivery' order.pk %}" class="btn btn-warning btn-sm">Mark Out for Delivery</a>
         {% elif order.status == 'Out for Delivery'%}
           <span class="badge bg-info">Out for Delivery</span>
         {% elif order.status == 'Delivered' %}
