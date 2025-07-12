@@ -15,39 +15,45 @@
       <th>Address</th>
       <th>Status</th>
       <th>Payment</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for order in orders %}
     <tr>
-      <td>{{ order.product.name }}</td>
-      <td>{{ order.customer_name }}</td>
-      <td>{{ order.phone }}</td>
-      <td>{{ order.house }}, {{ order.room }}</td>
-      <td>
-        {% if order.delivered %}
-          <span class="badge bg-success">Delivered</span>
-        {% elif order.out_for_delivery %}
-          <span class="badge bg-info">Out for Delivery</span>
-        {% else %}
-          <span class="badge bg-warning">Pending</span>
-        {% endif %}
-      </td>
-      <td>
-        {% if order.paid %}
-          <span class="badge bg-success">Paid</span>
-        {% else %}
-          <span class="badge bg-danger">Unpaid</span>
-        {% endif %}
-      </td>
+         <td>{{ order.product.name }}</td>
+         <td>{{ order.user.username }}</td>
+         <td>{{ order.house }}, {{ order.room }}</td>
+         <td>
+             {% if order.delivered %}
+             <span class="badge bg-success">Delivered</span>
+             {% elif order.out_for_delivery %}
+             <span class="badge bg-info">Out for Delivery</span>
+             {% else %}
+              <span class="badge bg-warning">Pending</span>
+              {% endif %}
+           </td>
     </tr>
-    <tr>
-      <td colspan="6">
-        <strong>Payment Confirmed:</strong> {{ order.payment_confirmed }} <br>
-        <strong>Receipt:</strong> {{ order.mpesa_receipt }}
+            {% endfor %}
+            
+        {% if order.pk %}
+          {% if not order.payment_confirmed %}
+            <a href="{% url 'initiate_mpesa_payment' order.pk %}" class="btn btn-primary btn-sm">Request Payment</a>
+          {% endif %}
+          {% for order in orders %}
+
+          {% if order.status == 'Pending' %}
+            <a href="{% url 'update_order_status' order.pk 'Out for Delivery' %}" class="btn btn-warning btn-sm">Out for Delivery</a>
+          {% elif order.status == 'Out for Delivery' %}
+            <span class="badge bg-info">Out for Delivery</span>
+          {% elif order.status == 'Delivered' %}
+            <span class="badge bg-success">Delivered</span>
+          {% endif %}
+        {% endif %}
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 {% endblock %}
+<p><strong>Payment Confirmed:</strong> {{ order.payment_confirmed }}</p>
+<p><strong>Receipt:</strong> {{ order.mpesa_receipt }}</p>
